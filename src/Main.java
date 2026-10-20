@@ -1,13 +1,42 @@
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-void main() {
-  //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-  // to see how IntelliJ IDEA suggests fixing it.
-  IO.println(String.format("Hello and welcome!"));
+public class Main {
+    // Aggiungiamo 'throws SaldoInsufficienteException' alla firma del main
+    public static void main(String[] args) throws SaldoInsufficienteException {
+        ContoBancario conto = new ContoBancario(500.0);
+        System.out.println("Conto creato con un saldo iniziale di: €500.0\n");
 
-  for (int i = 1; i <= 5; i++) {
-    //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-    // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-    IO.println("i = " + i);
-  }
+        // --- Scenario 1: Prelievo Valido ---
+        System.out.println("--- Scenario 1: Prelievo Valido (150.0 €) ---");
+        try {
+            conto.preleva(150.0);
+            System.out.println("Operazione completata con successo!");
+            System.out.println("Saldo residuo: €" + conto.getSaldo());
+        } catch (SaldoInsufficienteException e) {
+            System.out.println("Errore: " + e.getMessage());
+        }
+        System.out.println();
+
+        // --- Scenario 2: Prelievo Eccessivo (Checked Exception) ---
+        System.out.println("--- Scenario 2: Prelievo Eccessivo (600.0 €) ---");
+        try {
+            conto.preleva(600.0);
+        } catch (SaldoInsufficienteException e) {
+            System.out.println("Eccezione catturata: " + e.getMessage());
+            System.out.println("Saldo attuale: €" + e.getSaldoAttuale());
+            System.out.println("Importo richiesto: €" + e.getImportoRichiesto());
+            System.out.println("Deficit di denaro: €" + e.getDeficit());
+        } finally {
+            System.out.println("[FINALLY] Blocco finally eseguito. Saldo attuale invariato: €" + conto.getSaldo());
+        }
+        System.out.println();
+
+        // --- Scenario 3: Prelievo Negativo (Unchecked Exception) ---
+        System.out.println("--- Scenario 3: Prelievo Negativo (-50.0 €) ---");
+        try {
+            conto.preleva(-50.0);
+        } catch (ImportoNonValidoException e) {
+            System.out.println("Eccezione runtime catturata: " + e.getMessage());
+        } finally {
+            System.out.println("[FINALLY] Blocco finally eseguito per il prelievo non valido.");
+        }
+    }
 }
